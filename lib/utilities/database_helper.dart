@@ -51,9 +51,9 @@ class DatabaseHelper {
           verseText TEXT NOT NULL,
           chapterNo INTEGER NOT NULL,
           bookId INTEGER NOT NULL,
-          isBookmark INTEGER ,
-          isSaved INTEGER,
-          isHighlighted INTEGER,
+          isBookmark INTEGER DEFAULT 0,
+          isBookmark INTEGER DEFAULT 0,
+          notes TEXT,
           FOREIGN KEY(bookId) REFERENCES Book(bookId)
         );
     ''';
@@ -102,7 +102,10 @@ class DatabaseHelper {
   Future<dynamic> getVerses(int bookId, int chapterNo) async {
     var results = await database!.rawQuery(
         'SELECT * FROM $VERSE_TABLE WHERE bookId = $bookId AND chapterNo = $chapterNo ORDER BY verseNo ASC');
-    return results;
+    var list = List<Map<String, dynamic>>.from(results)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    return list;
   }
 
   Future<List<Map<String, dynamic>>> getRandomMeaningfulVerse() async {
@@ -112,7 +115,7 @@ class DatabaseHelper {
 
     int bookId = randomVerse['bookId'] as int;
     int chapterNo = randomVerse['chapterNo'] as int;
-    int verseNo = randomVerse['verseNo'] as int; 
+    int verseNo = randomVerse['verseNo'] as int;
 
     //Accessing verseText using the verseNo from the randomVerse map
     final results = await database!.rawQuery('''
@@ -139,7 +142,48 @@ class DatabaseHelper {
     }
     return results;
   }
+
+  Future<void> saveVerse(int verseId) async {
+    await database!.rawQuery('''
+  UPDATE $VERSE_TABLE
+  SET isBookmark = 1
+  WHERE verseId = $verseId
+''');
+  }
+
+  Future<List<Map<String, dynamic>>> getSavedVerses() async {
+    var results = await database!.rawQuery('''
+    SELECT $VERSE_TABLE.*, $BOOK_TABLE.bookName
+    FROM $VERSE_TABLE
+    INNER JOIN $BOOK_TABLE ON $VERSE_TABLE.bookId = $BOOK_TABLE.bookId
+    WHERE $VERSE_TABLE.isBookmark = 1
+    ''');
+    return results;
+  }
+
+  Future<List<Map<String, dynamic>>> getBookmarkVerses() async {
+    var result = await database!.rawQuery('''
+      SELECT * FROM $VERSE_TABLE WHERE isBookmark = 1
+  ''');
+  return result;
+  }
+
+  Future<void> bookmarkVerse(int verseId) async {
+    //Unhighlight the previous verse
+    await database!.rawQuery('''
+    UPDATE $VERSE_TABLE
+    SET isBookmark = 0 WHERE isBookmark = 1
+  ''');
+
+  //Highlight the previous verse
+    await database!.rawQuery('''
+    UPDATE $VERSE_TABLE
+    SET isBookmark = 1 WHERE verseId = $verseId
+  ''');
+  }
 }
+
+
 
   // Future<dynamic> getRandomVerse() async {
   //   var results = await database!.rawQuery('''

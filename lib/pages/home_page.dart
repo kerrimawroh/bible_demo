@@ -97,10 +97,12 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 5.0),
+                    const SizedBox(height: 2.0),
                     _renderRandomVerse(),
-                    const SizedBox(height: 70.0),
+                    const SizedBox(height: 20.0),
                     _renderTestamentSection(context),
+                    const SizedBox(height: 70.0),
+                    _renderAdditionalOptions(context),
                   ],
                 ),
               ),
@@ -215,6 +217,56 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         }),
+      ],
+    );
+  }
+
+  Widget _renderAdditionalOptions(BuildContext context) {
+    return Row(
+      children: [
+        OutlinedButton(
+          onPressed: () async {
+            var results = await DatabaseHelper.instance.getSavedVerses();
+            print('Saved Verses: $results');
+          },
+          style: OutlinedButton.styleFrom(
+            side: const BorderSide(
+              color: Color.fromARGB(255, 93, 58, 6), // Set border color
+              width: 2.0, // Set border width
+            ),
+            foregroundColor:
+                const Color.fromARGB(255, 93, 58, 6), // Set text color
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0), // Set border radius
+            ),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 15.0), // Set padding
+          ),
+          child: const Text('Saved Verses',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        const SizedBox(width: 10.0),
+        OutlinedButton(
+          onPressed: () async {
+            var results = await DatabaseHelper.instance.getBookmarkVerses();
+            print('Bookmark Verses: $results');
+          },
+          style: OutlinedButton.styleFrom(
+            side: const BorderSide(
+              color: Color.fromARGB(255, 93, 58, 6), // Set border color
+              width: 2.0, // Set border width
+            ),
+            foregroundColor:
+                const Color.fromARGB(255, 93, 58, 6), // Set text color
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0), // Set border radius
+            ),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 15.0), // Set padding
+          ),
+          child: const Text('Bookmark Verses',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
       ],
     );
   }
