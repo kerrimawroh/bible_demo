@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:bible_demo/pages/book_list_page.dart';
+import 'package:bible_demo/pages/verses_list_page.dart';
 import 'package:bible_demo/utilities/database_helper.dart';
 import 'package:bible_demo/utilities/repo.dart';
 import 'package:flutter/material.dart';
@@ -87,27 +88,16 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(25.0),
-        child: Column(
-          children: [
-            Center(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 30.0, horizontal: 5.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 2.0),
-                    _renderRandomVerse(),
-                    const SizedBox(height: 20.0),
-                    _renderTestamentSection(context),
-                    const SizedBox(height: 70.0),
-                    _renderAdditionalOptions(context),
-                  ],
-                ),
-              ),
-            ),
-          ],
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _renderRandomVerse(),
+              _renderTestamentSection(context),
+              _renderAdditionalOptions(context),
+            ],
+          ),
         ),
       ),
     );
@@ -242,14 +232,31 @@ class _HomePageState extends State<HomePage> {
             padding:
                 const EdgeInsets.symmetric(horizontal: 15.0), // Set padding
           ),
-          child: const Text('Saved Verses',
+          child: const Text('Saved',
               style: TextStyle(fontWeight: FontWeight.bold)),
         ),
         const SizedBox(width: 10.0),
         OutlinedButton(
           onPressed: () async {
-            var results = await DatabaseHelper.instance.getBookmarkVerses();
-            print('Bookmark Verses: $results');
+            var bookmarkVerse =
+                await DatabaseHelper.instance.getBookmarkVerses();
+            if (bookmarkVerse.isEmpty) {
+              SnackBar snackBar =
+                  const SnackBar(content: Text('No Bookmark available'));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              return;
+            }
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => VerseListPage(
+                  bookId: bookmarkVerse[0]['bookId'],
+                  chapterNo: bookmarkVerse[0]['bookId'],
+                  isShowBookmarked: true,
+                ),
+              ),
+            );
           },
           style: OutlinedButton.styleFrom(
             side: const BorderSide(
@@ -264,7 +271,7 @@ class _HomePageState extends State<HomePage> {
             padding:
                 const EdgeInsets.symmetric(horizontal: 15.0), // Set padding
           ),
-          child: const Text('Bookmark Verses',
+          child: const Text('Bookmark',
               style: TextStyle(fontWeight: FontWeight.bold)),
         ),
       ],

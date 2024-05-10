@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 class VerseListPage extends StatefulWidget {
   final int bookId;
   final int chapterNo;
+  final bool isShowBookmarked;
   const VerseListPage({
     super.key,
     required this.bookId,
     required this.chapterNo,
+    this.isShowBookmarked = false,
   });
 
   @override
@@ -21,7 +23,7 @@ class _VerseListPageState extends State<VerseListPage> {
   bool ishowBottomSheet = false;
   List<int> selectedVerses = [];
   ScrollController _scrollController = ScrollController();
-  List<Map<String, dynamic>> bookmarkVerse = [];
+  int bookmarkVerseId = -1;
 
   @override
   void initState() {
@@ -32,21 +34,24 @@ class _VerseListPageState extends State<VerseListPage> {
   Future<void> getVerses() async {
     verses = await DatabaseHelper.instance
         .getVerses(widget.bookId, widget.chapterNo);
-    bookmarkVerse = await DatabaseHelper.instance.getBookmarkVerses();
+    var bookmarkVerse = await DatabaseHelper.instance.getBookmarkVerses();
     setState(() => {});
 
     //Scroll to the bookmark verse
     if (bookmarkVerse.isEmpty) {
       return;
     }
-    int index = verses
-        .indexWhere((verse) => verse['verseId'] == bookmarkVerse[0]['verseId']);
-    if (index != 1) {
-      _scrollController.animateTo(
-        index * 60.0,
-        duration: Duration(milliseconds: 1200),
-        curve: Curves.easeInOut,
-      );
+    bookmarkVerseId = bookmarkVerse[0]['verseId'] as int;
+    if (widget.isShowBookmarked) {
+      int index =
+          verses.indexWhere((verse) => verse['verseId'] == bookmarkVerseId);
+      if (index != 1) {
+        _scrollController.animateTo(
+          index * 60.0,
+          duration: Duration(milliseconds: 1200),
+          curve: Curves.easeInOut,
+        );
+      }
     }
   }
 
@@ -65,6 +70,10 @@ class _VerseListPageState extends State<VerseListPage> {
   void onBookmarkVerse() async {
     if (selectedVerses.isEmpty) return;
     await DatabaseHelper.instance.bookmarkVerse(selectedVerses[0]);
+    //MARK: CHECKK!!
+    bookmarkVerseId = selectedVerses[0];
+    selectedVerses.clear;
+    setState(() {});
     SnackBar snackBar = const SnackBar(content: Text('Verse Bookmark'));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
@@ -107,7 +116,7 @@ class _VerseListPageState extends State<VerseListPage> {
             const Color.fromARGB(255, 210, 180, 140).withOpacity(0.2),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+        padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
         child: Stack(
           children: [
             _renderVersesList(),
@@ -142,38 +151,60 @@ class _VerseListPageState extends State<VerseListPage> {
               ),
             const SizedBox(height: 5.0), // Spacing between book info and verse
             GestureDetector(
-              onTap: () => onClickVerse(context, verses[index]['verseId']),
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                        text: '${verses[index]['verseNo']} ',
-                        style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400)),
-                    TextSpan(
-                      text: '${verses[index]['verseText']}',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                        background: Paint()
-                          ..color = isSaved
-                              ? const Color.fromARGB(255, 251, 244, 235)
-                              : Colors.transparent,
-                        decoration: selectedVerses
-                                .contains(verses[index]['verseId'] as int)
-                            ? TextDecoration.underline
-                            : TextDecoration.none,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+                onTap: () => onClickVerse(context, verses[index]['verseId']),
+                child: _verseRow(index, isSaved)),
           ],
         );
       },
+    );
+  }
+
+  Widget _verseRow(int index, bool isSaved) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 7.0, right: 4),
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(40),
+            color: bookmarkVerseId == verses[index]['verseId']
+                ? const Color.fromARGB(255, 98, 49, 4)
+                : Colors.transparent,
+          ),
+        ),
+        Expanded(
+          child: RichText(
+            softWrap: true,
+            text: TextSpan(
+              children: [
+                TextSpan(
+                    text: '${verses[index]['verseNo']} ',
+                    style: const TextStyle(
+                        fontSize: 13,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w400)),
+                TextSpan(
+                  text: '${verses[index]['verseText']}',
+                  style: TextStyle(
+                    fontSize: 17,
+                    color: Colors.black,
+                    background: Paint()
+                      ..color = isSaved
+                          ? const Color.fromARGB(153, 196, 164, 117)
+                          : Colors.transparent,
+                    decoration:
+                        selectedVerses.contains(verses[index]['verseId'] as int)
+                            ? TextDecoration.underline
+                            : TextDecoration.none,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
