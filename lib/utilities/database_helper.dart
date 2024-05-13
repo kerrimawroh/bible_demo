@@ -52,7 +52,7 @@ class DatabaseHelper {
           chapterNo INTEGER NOT NULL,
           bookId INTEGER NOT NULL,
           isBookmark INTEGER DEFAULT 0,
-          isBookmark INTEGER DEFAULT 0,
+          isSaved INTEGER DEFAULT 0,
           notes TEXT,
           FOREIGN KEY(bookId) REFERENCES Book(bookId)
         );
@@ -96,6 +96,12 @@ class DatabaseHelper {
     // get all books from the database belonging to the testamentId
     var results = await database!
         .rawQuery('SELECT * FROM $BOOK_TABLE WHERE testamentId = $testamentId');
+    return results;
+  }
+
+  Future<dynamic> getBookDetails(int bookId) async {
+    var results = await database!
+        .rawQuery('SELECT *  FROM $BOOK_TABLE WHERE bookId = $bookId');
     return results;
   }
 
@@ -165,7 +171,7 @@ class DatabaseHelper {
     var result = await database!.rawQuery('''
       SELECT * FROM $VERSE_TABLE WHERE isBookmark = 1
   ''');
-  return result;
+    return result;
   }
 
   Future<void> bookmarkVerse(int verseId) async {
@@ -175,7 +181,7 @@ class DatabaseHelper {
     SET isBookmark = 0 WHERE isBookmark = 1
   ''');
 
-  //Highlight the previous verse
+    //Highlight the previous verse
     await database!.rawQuery('''
     UPDATE $VERSE_TABLE
     SET isBookmark = 1 WHERE verseId = $verseId

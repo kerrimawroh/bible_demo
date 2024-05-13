@@ -1,11 +1,13 @@
 import 'package:bible_demo/utilities/database_helper.dart';
 import 'package:bible_demo/widgets/verse_bottom_options.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 class VerseListPage extends StatefulWidget {
   final int bookId;
   final int chapterNo;
   final bool isShowBookmarked;
+
   const VerseListPage({
     super.key,
     required this.bookId,
@@ -34,7 +36,8 @@ class _VerseListPageState extends State<VerseListPage> {
   Future<void> getVerses() async {
     verses = await DatabaseHelper.instance
         .getVerses(widget.bookId, widget.chapterNo);
-    var bookmarkVerse = await DatabaseHelper.instance.getBookmarkVerses();
+    var bookmarkVerse =
+        verses.where((verse) => verse['isBookmark'] == 1).toList();
     setState(() => {});
 
     //Scroll to the bookmark verse
@@ -53,6 +56,19 @@ class _VerseListPageState extends State<VerseListPage> {
         );
       }
     }
+  }
+
+  void onShareVerses() async {
+    if (selectedVerses.isEmpty) return;
+
+    String versesText = '';
+    for (var verseId in selectedVerses){
+      var verse = verses.firstWhere((verse) => verse['verseId'] == verseId);
+      var bookDetails = await DatabaseHelper.instance.getBookDetails(verse['bookId'] as int);
+      versesText += '${verse['verseText']} \n ${bookDetails[0]['bookName']} ${verse['chapterNo']}:${verse['verseNo']} \n\n';
+      print('Verses Text: $versesText');
+    }
+    Share.share(versesText);
   }
 
   void onClickVerse(BuildContext context, int verseId) {
@@ -249,8 +265,10 @@ class _VerseListPageState extends State<VerseListPage> {
                     // ),
 
                     const SizedBox(height: 10.0), // Add spacing between buttons
-                    OutlinedButton(
+                    OutlinedButton.icon(
                       onPressed: onSaveVerses,
+                      icon: const Icon(Icons.save), // Replace with desired icon
+                      label: const Text('Saved'),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(
                           color: Color.fromARGB(255, 56, 36, 3), // Red border
@@ -263,13 +281,15 @@ class _VerseListPageState extends State<VerseListPage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 15.0), // Add padding
                       ),
-                      child: const Text('Saved'),
                     ),
 
                     const SizedBox(width: 20.0), // Add space between buttons
 
-                    OutlinedButton(
+                    OutlinedButton.icon(
                       onPressed: onBookmarkVerse,
+                      icon: const Icon(
+                          Icons.bookmark), // Replace with desired icon
+                      label: const Text('Bookmark'),
                       style: OutlinedButton.styleFrom(
                         // Same style as "Saved" button
                         side: const BorderSide(
@@ -283,7 +303,26 @@ class _VerseListPageState extends State<VerseListPage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 15.0), // Add padding
                       ),
-                      child: const Text('Bookmark'),
+                    ),
+
+                    const SizedBox(width: 20.0), // Add space between buttons
+
+                    OutlinedButton.icon(
+                      onPressed: onShareVerses,
+                      icon:
+                          const Icon(Icons.share), // Replace with desired icon
+                      label: const Text('Share'),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(
+                          color: Color.fromARGB(255, 56, 36, 3),
+                          width: 1.0,
+                        ),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      ),
                     ),
                   ],
                 ),
@@ -291,8 +330,8 @@ class _VerseListPageState extends State<VerseListPage> {
             ),
           ),
           Positioned(
-            top: 10.0, // Adjust top padding as needed
-            right: 5.0, // Adjust right padding as needed
+            top: 5.0, // Adjust top padding as needed
+            right: 2.0, // Adjust right padding as needed
             child: Container(
               clipBehavior: Clip.antiAlias,
               decoration: const BoxDecoration(

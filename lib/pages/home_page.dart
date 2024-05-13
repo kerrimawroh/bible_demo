@@ -56,18 +56,13 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
-  // void getRandomVerse() async {
-  //   randomVerse = await DatabaseHelper.instance.getRandomVerse();
-  //   setState(() {});
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(255, 252, 240, 1.0),
       appBar: AppBar(
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(8.0), // Adjust height as needed
+          preferredSize: const Size.fromHeight(20.0), // Adjust height as needed
           child: Container(
             color:
                 const Color.fromARGB(255, 75, 49, 14), // Set border color here
@@ -95,11 +90,69 @@ class _HomePageState extends State<HomePage> {
             children: [
               _renderRandomVerse(),
               _renderTestamentSection(context),
-              _renderAdditionalOptions(context),
+              //_renderAdditionalOptions(context),
+              _renderBottomNavigationBar(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _renderBottomNavigationBar() {
+  return Container(
+    decoration: const BoxDecoration( // Add decoration for border
+      color: Color.fromRGBO(255, 252, 240, 1.0),
+      border: Border(
+        top: BorderSide( // Add border only to the top
+          color: Color.fromARGB(255, 75, 49, 14),
+          width: 0.25,
+        ),
+      ),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildSavedButton(),
+        _buildBookmarkButton(),
+      ],
+    ),
+  );
+}
+
+  Widget _buildSavedButton() {
+    return IconButton(
+      icon: const Icon(Icons.bookmark_border_outlined),
+      onPressed: () async {
+        var results = await DatabaseHelper.instance.getSavedVerses();
+        print('Saved Verses: $results');
+      },
+    );
+  }
+
+  Widget _buildBookmarkButton() {
+    return IconButton(
+      icon: const Icon(Icons.bookmark),
+      onPressed: () async {
+        // Implement logic to handle bookmarks (e.g., navigate to bookmarked verses list)
+        var bookmarkVerse = await DatabaseHelper.instance.getBookmarkVerses();
+        if (bookmarkVerse.isEmpty) {
+          SnackBar snackBar =
+              const SnackBar(content: Text('No Bookmark available'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          return;
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VerseListPage(
+              bookId: bookmarkVerse[0]['bookId'],
+              chapterNo: bookmarkVerse[0]['chapterNo'],
+              isShowBookmarked: true,
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -172,16 +225,21 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
+            const SizedBox(height: 15.0),
             Icon(
               icon,
               color: const Color.fromARGB(255, 127, 72, 13),
               size: 25.0,
             ),
             const SizedBox(width: 20.0),
-            Text(testamentName,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 18, letterSpacing: double.minPositive)),
+            Text(
+              testamentName,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 18,
+                letterSpacing: double.minPositive,
+              ),
+            ),
           ],
         ),
       );
@@ -190,7 +248,7 @@ class _HomePageState extends State<HomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _renderTestamentButton('\nTestament\n Rim\n', Icons.book, () {
+        _renderTestamentButton('\nTestament\n Rim\n', Icons.book_outlined, () {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -199,7 +257,8 @@ class _HomePageState extends State<HomePage> {
           );
         }),
         const SizedBox(width: 20.0),
-        _renderTestamentButton('\nTestament\n Thymmai\n', Icons.book, () {
+        _renderTestamentButton('\nTestament\n Thymmai\n', Icons.book_outlined,
+            () {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -207,73 +266,6 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         }),
-      ],
-    );
-  }
-
-  Widget _renderAdditionalOptions(BuildContext context) {
-    return Row(
-      children: [
-        OutlinedButton(
-          onPressed: () async {
-            var results = await DatabaseHelper.instance.getSavedVerses();
-            print('Saved Verses: $results');
-          },
-          style: OutlinedButton.styleFrom(
-            side: const BorderSide(
-              color: Color.fromARGB(255, 93, 58, 6), // Set border color
-              width: 2.0, // Set border width
-            ),
-            foregroundColor:
-                const Color.fromARGB(255, 93, 58, 6), // Set text color
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0), // Set border radius
-            ),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 15.0), // Set padding
-          ),
-          child: const Text('Saved',
-              style: TextStyle(fontWeight: FontWeight.bold)),
-        ),
-        const SizedBox(width: 10.0),
-        OutlinedButton(
-          onPressed: () async {
-            var bookmarkVerse =
-                await DatabaseHelper.instance.getBookmarkVerses();
-            if (bookmarkVerse.isEmpty) {
-              SnackBar snackBar =
-                  const SnackBar(content: Text('No Bookmark available'));
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              return;
-            }
-
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => VerseListPage(
-                  bookId: bookmarkVerse[0]['bookId'],
-                  chapterNo: bookmarkVerse[0]['bookId'],
-                  isShowBookmarked: true,
-                ),
-              ),
-            );
-          },
-          style: OutlinedButton.styleFrom(
-            side: const BorderSide(
-              color: Color.fromARGB(255, 93, 58, 6), // Set border color
-              width: 2.0, // Set border width
-            ),
-            foregroundColor:
-                const Color.fromARGB(255, 93, 58, 6), // Set text color
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0), // Set border radius
-            ),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 15.0), // Set padding
-          ),
-          child: const Text('Bookmark',
-              style: TextStyle(fontWeight: FontWeight.bold)),
-        ),
       ],
     );
   }
