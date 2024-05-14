@@ -26,11 +26,13 @@ class _VerseListPageState extends State<VerseListPage> {
   List<int> selectedVerses = [];
   ScrollController _scrollController = ScrollController();
   int bookmarkVerseId = -1;
+  List<Map<String, dynamic>> bookDetails =[];
 
   @override
   void initState() {
     super.initState();
     getVerses();
+    getBookDetails();
   }
 
   Future<void> getVerses() async {
@@ -58,14 +60,22 @@ class _VerseListPageState extends State<VerseListPage> {
     }
   }
 
+  Future<void> getBookDetails() async {
+    var results =
+          await DatabaseHelper.instance.getBookDetails(widget.bookId);
+    setState(() {
+      bookDetails = results;
+    });
+  }
+
   void onShareVerses() async {
     if (selectedVerses.isEmpty) return;
 
     String versesText = '';
-    for (var verseId in selectedVerses){
+    for (var verseId in selectedVerses) {
       var verse = verses.firstWhere((verse) => verse['verseId'] == verseId);
-      var bookDetails = await DatabaseHelper.instance.getBookDetails(verse['bookId'] as int);
-      versesText += '${verse['verseText']} \n ${bookDetails[0]['bookName']} ${verse['chapterNo']}:${verse['verseNo']} \n\n';
+      versesText +=
+          '${verse['verseText']} \n ${bookDetails[0]['bookName']} ${verse['chapterNo']}:${verse['verseNo']} \n\n';
       print('Verses Text: $versesText');
     }
     Share.share(versesText);
@@ -111,11 +121,45 @@ class _VerseListPageState extends State<VerseListPage> {
     setState(() {});
   }
 
+//MARK: Prev Next Chapter
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Color.fromARGB(255, 251, 244, 235).withOpacity(0.9),
       appBar: AppBar(
+        actions: [
+          //Previous Chapter
+          IconButton(
+              onPressed: () {
+                if (widget.chapterNo - 1 < 1) return;
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return VerseListPage(
+                          bookId: widget.bookId,
+                          chapterNo: widget.chapterNo - 1);
+                    },
+                  ),
+                );
+              },
+              icon: const Icon(Icons.keyboard_arrow_left, size: 30)),
+          //Next Chapter
+          IconButton(
+              onPressed: () {
+                if(widget.chapterNo + 1 > (bookDetails[0]['totalNoChapters'] as int)) return;
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return VerseListPage(
+                          bookId: widget.bookId,
+                          chapterNo: widget.chapterNo + 1);
+                    },
+                  ),
+                );
+              },
+              icon: const Icon(Icons.keyboard_arrow_right, size: 30))
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(8.0), // Adjust height as needed
           child: Container(

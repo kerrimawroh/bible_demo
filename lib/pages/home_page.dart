@@ -100,39 +100,46 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _renderBottomNavigationBar() {
-  return Container(
-    decoration: const BoxDecoration( // Add decoration for border
-      color: Color.fromRGBO(255, 252, 240, 1.0),
-      border: Border(
-        top: BorderSide( // Add border only to the top
-          color: Color.fromARGB(255, 75, 49, 14),
-          width: 0.25,
+    return Container(
+      decoration: const BoxDecoration(
+        // Add decoration for border
+        color: Color.fromRGBO(255, 252, 240, 1.0),
+        border: Border(
+          top: BorderSide(
+            // Add border only to the top
+            color: Color.fromARGB(255, 75, 49, 14),
+            width: 0.25,
+          ),
         ),
       ),
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildSavedButton(),
-        _buildBookmarkButton(),
-      ],
-    ),
-  );
-}
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildSavedButton(),
+          _buildBookmarkButton(),
+        ],
+      ),
+    );
+  }
 
   Widget _buildSavedButton() {
-    return IconButton(
-      icon: const Icon(Icons.bookmark_border_outlined),
+    return TextButton.icon(
+      icon: const Icon(Icons.save_as_outlined),
       onPressed: () async {
         var results = await DatabaseHelper.instance.getSavedVerses();
         print('Saved Verses: $results');
       },
+      label: const Text('Saved'),
+      style: const ButtonStyle(
+          foregroundColor: MaterialStatePropertyAll(
+        Color.fromARGB(255, 127, 72, 13),
+      )),
     );
   }
 
   Widget _buildBookmarkButton() {
-    return IconButton(
-      icon: const Icon(Icons.bookmark),
+    return TextButton.icon(
+      icon: const Icon(Icons.bookmarks_outlined),
       onPressed: () async {
         // Implement logic to handle bookmarks (e.g., navigate to bookmarked verses list)
         var bookmarkVerse = await DatabaseHelper.instance.getBookmarkVerses();
@@ -153,6 +160,11 @@ class _HomePageState extends State<HomePage> {
           ),
         );
       },
+      label: const Text('Bookmark'),
+      style: const ButtonStyle(
+          foregroundColor: MaterialStatePropertyAll(
+        Color.fromARGB(255, 127, 72, 13),
+      )),
     );
   }
 
