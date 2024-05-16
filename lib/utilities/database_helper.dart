@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:bible_demo/utilities/repo.dart';
+import 'package:KaBaibl/utilities/repo.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -181,7 +181,7 @@ class DatabaseHelper {
     SET isBookmark = 0 WHERE isBookmark = 1
   ''');
 
-    //Highlight the previous verse
+    //Highlight the current verse
     await database!.rawQuery('''
     UPDATE $VERSE_TABLE
     SET isBookmark = 1 WHERE verseId = $verseId
@@ -189,14 +189,4 @@ class DatabaseHelper {
   }
 }
 
-
-
-  // Future<dynamic> getRandomVerse() async {
-  //   var results = await database!.rawQuery('''
-  //   SELECT $VERSE_TABLE.*, $BOOK_TABLE.bookName
-  //   FROM $VERSE_TABLE
-  //   INNER JOIN $BOOK_TABLE ON $VERSE_TABLE.bookId = $BOOK_TABLE.bookId
-  //   ORDER BY RANDOM() LIMIT 1
-  //   ''');
-  //   return results;
 

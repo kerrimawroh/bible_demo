@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'package:bible_demo/pages/book_list_page.dart';
-import 'package:bible_demo/pages/verses_list_page.dart';
-import 'package:bible_demo/utilities/database_helper.dart';
-import 'package:bible_demo/utilities/repo.dart';
+import 'package:KaBaibl/pages/book_list_page.dart';
+import 'package:KaBaibl/pages/verses_list_page.dart';
+import 'package:KaBaibl/utilities/database_helper.dart';
+import 'package:KaBaibl/utilities/repo.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -90,7 +90,6 @@ class _HomePageState extends State<HomePage> {
             children: [
               _renderRandomVerse(),
               _renderTestamentSection(context),
-              //_renderAdditionalOptions(context),
               _renderBottomNavigationBar(),
             ],
           ),
@@ -260,7 +259,7 @@ class _HomePageState extends State<HomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _renderTestamentButton('\nTestament\n Rim\n', Icons.book_outlined, () {
+        _renderTestamentButton('\nTestament\n Rim\n', Icons.menu_book_outlined, () {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -269,7 +268,7 @@ class _HomePageState extends State<HomePage> {
           );
         }),
         const SizedBox(width: 20.0),
-        _renderTestamentButton('\nTestament\n Thymmai\n', Icons.book_outlined,
+        _renderTestamentButton('\nTestament\n Thymmai\n', Icons.menu_book_outlined,
             () {
           Navigator.push(
             context,

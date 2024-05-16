@@ -1,6 +1,6 @@
-# bible_demo
+# KaBaibl
 
-A new Flutter project.
+A Bible app for mobile.
 
 ## Getting Started
 

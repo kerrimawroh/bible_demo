@@ -1,8 +1,9 @@
-import 'package:bible_demo/pages/home_page.dart';
-import 'package:bible_demo/utilities/database_helper.dart';
+import 'package:KaBaibl/pages/home_page.dart';
+import 'package:KaBaibl/utilities/database_helper.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
+
   WidgetsFlutterBinding();
   await DatabaseHelper.instance.connectDatabase();
   //check if the database is empty, if so insert the dummy data else do nothing, because
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'References',
+      title: 'KaBaibl',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

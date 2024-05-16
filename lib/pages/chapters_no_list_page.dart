@@ -1,4 +1,4 @@
-import 'package:bible_demo/pages/verses_list_page.dart';
+import 'package:KaBaibl/pages/verses_list_page.dart';
 import 'package:flutter/material.dart';
 
 class ChaptersNoListPage extends StatefulWidget {
@@ -46,7 +46,7 @@ class _ChaptersNoListPageState extends State<ChaptersNoListPage> {
     31: 'Jingkhein',
     32: 'Deuteronomi',
     33: 'Joshua',
-    34: 'Ki NongbisharRuth',
+    34: 'Ki Nongbishar',
     35: 'Ruth',
     36: '1 Samuel',
     37: '2 Samuel',

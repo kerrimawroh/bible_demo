@@ -1,5 +1,4 @@
-import 'package:bible_demo/utilities/database_helper.dart';
-import 'package:bible_demo/widgets/verse_bottom_options.dart';
+import 'package:KaBaibl/utilities/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -292,21 +291,6 @@ class _VerseListPageState extends State<VerseListPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Align(
-                    //   child: IconButton(
-                    //     onPressed: () => setState(() {
-                    //       ishowBottomSheet = false;
-                    //       selectedVerses.clear();
-                    //     }),
-                    //     icon: const Icon(
-                    //       Icons.close,
-                    //       size: 18.0,
-                    //       color:
-                    //           Color.fromARGB(255, 56, 36, 3), // Red icon color
-                    //     ),
-                    //     padding: EdgeInsets.zero,
-                    //   ),
-                    // ),
 
                     const SizedBox(height: 10.0), // Add spacing between buttons
                     OutlinedButton.icon(

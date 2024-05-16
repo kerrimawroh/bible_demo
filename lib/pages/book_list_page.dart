@@ -1,5 +1,5 @@
-import 'package:bible_demo/pages/chapters_no_list_page.dart';
-import 'package:bible_demo/utilities/database_helper.dart';
+import 'package:KaBaibl/pages/chapters_no_list_page.dart';
+import 'package:KaBaibl/utilities/database_helper.dart';
 import 'package:easy_search_bar/easy_search_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -41,8 +41,6 @@ class _BookListPageState extends State<BookListPage> {
               .toList();
           setState(() {});
         },
-        // backgroundColor:
-        //     const Color.fromARGB(255, 210, 180, 140).withOpacity(0.25),
         backgroundColor:
             Color.fromARGB(255, 250, 248, 246),
       ),
