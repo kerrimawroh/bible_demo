@@ -1,6 +1,6 @@
 # KaBaibl
 
-A Bible app for mobile.
+A Bible app for android.
 
 ## Getting Started
 
